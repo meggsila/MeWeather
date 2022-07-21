@@ -48,13 +48,69 @@ class HomeVC: UIViewController {
         return view
     }()
     
+    var todayLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .clear
+        label.textColor = .label
+        label.font = UIFont(name: Fonts.heavy , size: 17)
+        label.textAlignment = .left
+        label.text = "Today"
+        return label
+    }()
+    
     var weatherIcon: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
         image.backgroundColor = .clear
-        image.image = UIImage(systemName: "cloud.sun.fill")
+        image.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
+        image.contentMode = .scaleAspectFit
         image.layer.cornerRadius = 10
         return image
+    }()
+    
+    var cityLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .clear
+        label.textColor = .secondaryLabel
+        label.font = UIFont(name: Fonts.medium , size: 17)
+        label.textAlignment = .left
+        label.text = "Paris, FR"
+        return label
+    }()
+    
+    var dateLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .clear
+        label.textColor = .secondaryLabel
+        label.font = UIFont(name: Fonts.medium , size: 17)
+        label.textAlignment = .right
+        label.text = "Thur, 21 Jul"
+        return label
+    }()
+    
+    var tempLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .clear
+        label.textColor = .label
+        label.textAlignment = .right
+        label.font = UIFont(name: Fonts.medium , size: 100)
+        label.backgroundColor = .clear
+        label.text = "23°"
+        return label
+    }()
+    
+    var descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .clear
+        label.textColor = .secondaryLabel
+        label.font = UIFont(name: Fonts.medium , size: 15)
+        label.text = "Partially cloudy, feels like 24°"
+        return label
     }()
 
     override func viewDidLoad() {
@@ -100,8 +156,50 @@ class HomeVC: UIViewController {
     }
     
     private func setupDashboard() {
-        dashboard.frame = CGRect(x: 10, y: 50 + 110 + 50 + 20, width: view.frame.width - 20, height: 200)
         view.addSubview(dashboard)
+        view.addSubview(todayLabel)
+        view.addSubview(weatherIcon)
+        view.addSubview(cityLabel)
+        view.addSubview(dateLabel)
+        view.addSubview(tempLabel)
+//        view.addSubview(descriptionLabel)
+        
+        NSLayoutConstraint.activate([
+            dashboard.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
+            dashboard.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
+            dashboard.heightAnchor.constraint(equalToConstant: 210),
+            dashboard.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 20),
+            
+            todayLabel.leftAnchor.constraint(equalTo: dashboard.leftAnchor, constant: 10),
+            todayLabel.heightAnchor.constraint(equalToConstant: 20),
+            todayLabel.widthAnchor.constraint(equalToConstant: 210 - 2 * ( 20 + 10 + 10)),
+            todayLabel.topAnchor.constraint(equalTo: dashboard.topAnchor, constant: 10),
+            
+            weatherIcon.leftAnchor.constraint(equalTo: dashboard.leftAnchor, constant: 10),
+            weatherIcon.heightAnchor.constraint(equalToConstant: 210 - 2 * ( 20 + 10 + 10)),
+            weatherIcon.widthAnchor.constraint(equalToConstant: 210 - 2 * ( 20 + 10 + 10)),
+            weatherIcon.topAnchor.constraint(equalTo: todayLabel.bottomAnchor, constant: 10),
+            
+            cityLabel.leftAnchor.constraint(equalTo: dashboard.leftAnchor, constant: 10),
+            cityLabel.heightAnchor.constraint(equalToConstant: 20),
+            cityLabel.widthAnchor.constraint(equalToConstant: 210 - 2 * ( 20 + 10 + 10)),
+            cityLabel.topAnchor.constraint(equalTo: weatherIcon.bottomAnchor, constant: 10),
+            
+            dateLabel.rightAnchor.constraint(equalTo: dashboard.rightAnchor, constant: -10),
+            dateLabel.heightAnchor.constraint(equalToConstant: 20),
+            dateLabel.widthAnchor.constraint(equalToConstant: 210 - 2 * ( 20 + 10 + 10)),
+            dateLabel.topAnchor.constraint(equalTo: dashboard.topAnchor, constant: 10),
+            
+            tempLabel.leftAnchor.constraint(equalTo: weatherIcon.rightAnchor, constant: 10),
+            tempLabel.rightAnchor.constraint(equalTo: dashboard.rightAnchor, constant: -10),
+            tempLabel.heightAnchor.constraint(equalToConstant: 210 - 2 * ( 20 + 10 + 10)),
+            tempLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 10),
+            
+//            cityLabel.topAnchor.constraint(equalTo: weatherIcon.bottomAnchor, constant: 10),
+//            cityLabel.leftAnchor.constraint(equalTo: weatherIcon.rightAnchor, constant: 10),
+//            cityLabel.rightAnchor.constraint(equalTo: dashboard.rightAnchor, constant: -10),
+//            cityLabel.heightAnchor.constraint(equalToConstant: 35)
+        ])
     }
     
     @objc
@@ -116,4 +214,10 @@ class HomeVC: UIViewController {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths[0]
     }
+}
+
+enum Fonts {
+    static let heavy = "Avenir-Heavy"
+    static let medium = "Avenir-Medium"
+    static let light = "Avenir-Light"
 }
