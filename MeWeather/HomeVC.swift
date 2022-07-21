@@ -15,7 +15,7 @@ class HomeVC: UIViewController {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(systemName: "person.circle.fill")
-        imageView.layer.cornerRadius = 45
+        imageView.layer.cornerRadius = 55
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         imageView.tintColor = .systemGray5
@@ -77,6 +77,7 @@ class HomeVC: UIViewController {
         label.font = UIFont(name: Fonts.medium , size: 17)
         label.textAlignment = .left
         label.text = "Paris, FR"
+        label.adjustsFontSizeToFitWidth = true
         return label
     }()
     
@@ -97,7 +98,7 @@ class HomeVC: UIViewController {
         label.backgroundColor = .clear
         label.textColor = .label
         label.textAlignment = .right
-        label.font = UIFont(name: Fonts.medium , size: 100)
+        label.font = UIFont(name: Fonts.medium , size: 70)
         label.backgroundColor = .clear
         label.text = "23°"
         return label
