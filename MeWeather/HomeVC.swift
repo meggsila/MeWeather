@@ -77,7 +77,6 @@ class HomeVC: UIViewController {
         label.font = UIFont(name: Fonts.medium , size: 17)
         label.textAlignment = .left
         label.text = "Paris, FR"
-        label.adjustsFontSizeToFitWidth = true
         return label
     }()
     
@@ -109,8 +108,9 @@ class HomeVC: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
         label.textColor = .secondaryLabel
-        label.font = UIFont(name: Fonts.medium , size: 15)
-        label.text = "Partially cloudy, feels like 24°"
+        label.textAlignment = .right
+        label.font = UIFont(name: Fonts.medium , size: 17)
+        label.text = "Partially cloudy"
         return label
     }()
 
@@ -163,7 +163,7 @@ class HomeVC: UIViewController {
         view.addSubview(cityLabel)
         view.addSubview(dateLabel)
         view.addSubview(tempLabel)
-//        view.addSubview(descriptionLabel)
+        view.addSubview(descriptionLabel)
         
         NSLayoutConstraint.activate([
             dashboard.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
@@ -181,10 +181,10 @@ class HomeVC: UIViewController {
             weatherIcon.widthAnchor.constraint(equalToConstant: 210 - 2 * ( 20 + 10 + 10)),
             weatherIcon.topAnchor.constraint(equalTo: todayLabel.bottomAnchor, constant: 10),
             
+            cityLabel.bottomAnchor.constraint(equalTo: dashboard.bottomAnchor, constant: -10),
             cityLabel.leftAnchor.constraint(equalTo: dashboard.leftAnchor, constant: 10),
             cityLabel.heightAnchor.constraint(equalToConstant: 20),
             cityLabel.widthAnchor.constraint(equalToConstant: 210 - 2 * ( 20 + 10 + 10)),
-            cityLabel.topAnchor.constraint(equalTo: weatherIcon.bottomAnchor, constant: 10),
             
             dateLabel.rightAnchor.constraint(equalTo: dashboard.rightAnchor, constant: -10),
             dateLabel.heightAnchor.constraint(equalToConstant: 20),
@@ -196,10 +196,10 @@ class HomeVC: UIViewController {
             tempLabel.heightAnchor.constraint(equalToConstant: 210 - 2 * ( 20 + 10 + 10)),
             tempLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 10),
             
-//            cityLabel.topAnchor.constraint(equalTo: weatherIcon.bottomAnchor, constant: 10),
-//            cityLabel.leftAnchor.constraint(equalTo: weatherIcon.rightAnchor, constant: 10),
-//            cityLabel.rightAnchor.constraint(equalTo: dashboard.rightAnchor, constant: -10),
-//            cityLabel.heightAnchor.constraint(equalToConstant: 35)
+            descriptionLabel.bottomAnchor.constraint(equalTo: dashboard.bottomAnchor, constant: -10),
+            descriptionLabel.leftAnchor.constraint(equalTo: weatherIcon.rightAnchor, constant: 10),
+            descriptionLabel.rightAnchor.constraint(equalTo: dashboard.rightAnchor, constant: -10),
+            descriptionLabel.heightAnchor.constraint(equalToConstant: 35)
         ])
     }
     
