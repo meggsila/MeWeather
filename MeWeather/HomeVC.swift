@@ -9,7 +9,6 @@ import UIKit
 import Alamofire
 
 class HomeVC: UIViewController {
-    //https://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit={limit}&appid={API key}
     // MARK: - Profile Section
     let profileImage: UIImageView = {
         let imageView = UIImageView()
@@ -87,7 +86,6 @@ class HomeVC: UIViewController {
         label.textColor = .secondaryLabel
         label.font = UIFont(name: Fonts.medium , size: 17)
         label.textAlignment = .right
-        label.text = "Thur, 21 Jul"
         return label
     }()
     
@@ -120,6 +118,11 @@ class HomeVC: UIViewController {
         setupProfileSection()
         setupSearchController()
         setupDashboard()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+        dateLabel.text = localDate()
     }
     
     private func setupProfileSection() {
@@ -214,6 +217,14 @@ class HomeVC: UIViewController {
     func getDocumentsDirectory() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths[0]
+    }
+    func localDate() -> String {
+        
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEEE, dd MMMM"
+        let yearString = dateFormatter.string(from: date)
+        return yearString
     }
 }
 

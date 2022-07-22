@@ -16,7 +16,12 @@ extension HomeVC: UISearchBarDelegate {
             AF.request("https://api.openweathermap.org/geo/1.0/direct?q=\(cityName)&limit=1&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
                 switch response.result {
                 case .failure:
-                    print("failure: \(response)")
+                    let networkErrorAlert = UIAlertController(title: "Network Error", message: "Something wrong happened", preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "OK", style: .default) { [self] (action) in
+                        self.dismiss(animated: true)
+                    }
+                    networkErrorAlert.addAction(okAction)
+                    self.present(networkErrorAlert, animated: true, completion: nil)
                 case .success:
                     guard let data = response.data else { return }
                     do {
@@ -28,8 +33,13 @@ extension HomeVC: UISearchBarDelegate {
                             let lon = geoItem.lon
                             self.requestWeatherData(lat: lat, lon: lon)
                         }
-                    } catch let error {
-                        print(error)
+                    } catch {
+                        let networkErrorAlert = UIAlertController(title: "Network Error", message: "Something wrong happened", preferredStyle: .alert)
+                        let okAction = UIAlertAction(title: "OK", style: .default) { [self] (action) in
+                            self.dismiss(animated: true)
+                        }
+                        networkErrorAlert.addAction(okAction)
+                        self.present(networkErrorAlert, animated: true, completion: nil)
                     }
                 }
             }
@@ -41,9 +51,14 @@ extension HomeVC: UISearchBarDelegate {
         AF.request("https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
             switch response.result {
             case .failure:
-                print("failure: \(response)")
+                let networkErrorAlert = UIAlertController(title: "Network Error", message: "Something wrong happened", preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "OK", style: .default) { [self] (action) in
+                    self.dismiss(animated: true)
+                }
+                networkErrorAlert.addAction(okAction)
+                self.present(networkErrorAlert, animated: true, completion: nil)
             case .success(let data):
-                print("data is \(data)")
+                print("Weather Data: \(data)")
                 guard let data = data as? [String: Any] else {
                     return
                 }
@@ -58,13 +73,30 @@ extension HomeVC: UISearchBarDelegate {
                 
                 let cityName = data["name"] as? String ?? "City"
                 let countryName = sys["country"] as? String ?? "Country"
-                let temp = main["temp"] as? Double ?? 0.0
-                let tempInt = Int(temp)
-                let tempCelcius = (tempInt - 32) * 5 / 9
+                let tempKelvin = main["temp"] as? Double ?? 0.0
+                let tempCelcius = tempKelvin - 273.15
+                let tempInt = Int(tempCelcius)
                 
                 DispatchQueue.main.async {
                     self.cityLabel.text = "\(String(describing: cityName)), \(String(describing: countryName))"
-                    self.tempLabel.text = "\(tempCelcius)°"
+                    self.tempLabel.text = "\(tempInt)°"
+                    
+//                    switch description {
+//                    case .clearSky:
+//                        print("test")
+//                    case .fewClouds:
+//                        print("test")
+//                    case .overcastClouds:
+//                        print("test")
+//                    case .brokenClouds:
+//                        print("test")
+//                    case .scatteredClouds:
+//                        print("test")
+//                    case .lightRain:
+//                        print("test")
+//                    default:
+//                        print("test")
+//                    }
                 }
             }
         }
@@ -105,3 +137,12 @@ struct GeoElement: Codable {
 }
 
 typealias GeoData = [GeoElement]
+
+enum WeatherDescription: String {
+    case clearSky = "clear sky"
+    case fewClouds = "few clouds"
+    case overcastClouds = "overcast clouds"
+    case brokenClouds = "broken clouds"
+    case scatteredClouds = "scattered clouds"
+    case lightRain = "light rain"
+}
