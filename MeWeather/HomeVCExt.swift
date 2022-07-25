@@ -22,24 +22,16 @@ extension HomeVC: UISearchBarDelegate {
                     }
                     networkErrorAlert.addAction(okAction)
                     self.present(networkErrorAlert, animated: true, completion: nil)
-                case .success:
-                    guard let data = response.data else { return }
-                    do {
-                        let decoder = JSONDecoder()
-                        let geoResponse = try decoder.decode(GeoData.self, from: data)
-                        if geoResponse.isEmpty == false {
-                            let geoItem = geoResponse[0]
-                            let lat = geoItem.lat
-                            let lon = geoItem.lon
-                            self.requestWeatherData(lat: lat, lon: lon)
-                        }
-                    } catch {
-                        let networkErrorAlert = UIAlertController(title: "Network Error", message: "Something wrong happened", preferredStyle: .alert)
-                        let okAction = UIAlertAction(title: "OK", style: .default) { [self] (action) in
-                            self.dismiss(animated: true)
-                        }
-                        networkErrorAlert.addAction(okAction)
-                        self.present(networkErrorAlert, animated: true, completion: nil)
+                case .success(let data):
+                    guard let data = data as? [[String: Any]] else {
+                        return
+                    }
+                    
+                    if data.isEmpty == false {
+                        let weatherItem = data[0]
+                        let lat = weatherItem["lat"] as? Double ?? 0.0
+                        let lon = weatherItem["lon"] as? Double ?? 0.0
+                        self.requestWeatherData(lat: lat, lon: lon)
                     }
                 }
             }
@@ -71,33 +63,43 @@ extension HomeVC: UISearchBarDelegate {
                     return
                 }
                 
+                guard let weatherData = data["weather"] as? [[String: Any]] else {
+                    return
+                }
+ 
                 let cityName = data["name"] as? String ?? "City"
                 let countryName = sys["country"] as? String ?? "Country"
                 let tempKelvin = main["temp"] as? Double ?? 0.0
                 let tempCelcius = tempKelvin - 273.15
                 let tempInt = Int(tempCelcius)
                 
-                DispatchQueue.main.async {
-                    self.cityLabel.text = "\(String(describing: cityName)), \(String(describing: countryName))"
-                    self.tempLabel.text = "\(tempInt)°"
+                if weatherData.isEmpty == false {
+                    let weatherItem = weatherData[0]
+                    let description = weatherItem["description"] as? String ?? "Description"
+                    self.descriptionLabel.text = description.capitalizingFirstLetter()
                     
-//                    switch description {
-//                    case .clearSky:
-//                        print("test")
-//                    case .fewClouds:
-//                        print("test")
-//                    case .overcastClouds:
-//                        print("test")
-//                    case .brokenClouds:
-//                        print("test")
-//                    case .scatteredClouds:
-//                        print("test")
-//                    case .lightRain:
-//                        print("test")
-//                    default:
-//                        print("test")
-//                    }
+                    switch description {
+                    case "clear sky":
+                        self.weatherIcon.image = UIImage(systemName: "sun.max.fill")?.withRenderingMode(.alwaysOriginal)
+                    case "few clouds":
+                        self.weatherIcon.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
+                    case "overcast clouds":
+                        self.weatherIcon.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
+                    case "broken clouds":
+                        self.weatherIcon.image = UIImage(systemName: "cloud.fill")?.withRenderingMode(.alwaysOriginal)
+                    case "scattered clouds":
+                        self.weatherIcon.image = UIImage(systemName: "smoke.fill")?.withRenderingMode(.alwaysOriginal)
+                    case "light rain":
+                        self.weatherIcon.image = UIImage(systemName: "cloud.hail.fill")?.withRenderingMode(.alwaysOriginal)
+                    case "heavy rain":
+                        self.weatherIcon.image = UIImage(systemName: "cloud.heavyrain.fill")?.withRenderingMode(.alwaysOriginal)
+                    default:
+                        self.weatherIcon.image = UIImage(systemName: "cloud.fill")?.withRenderingMode(.alwaysOriginal)
+                    }
                 }
+                
+                self.cityLabel.text = "\(String(describing: cityName)), \(String(describing: countryName))"
+                self.tempLabel.text = "\(tempInt)°"
             }
         }
     }
@@ -122,22 +124,6 @@ extension HomeVC: UIImagePickerControllerDelegate, UINavigationControllerDelegat
     }
 }
 
-struct GeoElement: Codable {
-    let name: String
-    let localNames: [String: String]?
-    let lat, lon: Double
-    let country: String
-    let state: String?
-
-    enum CodingKeys: String, CodingKey {
-        case name
-        case localNames = "local_names"
-        case lat, lon, country, state
-    }
-}
-
-typealias GeoData = [GeoElement]
-
 enum WeatherDescription: String {
     case clearSky = "clear sky"
     case fewClouds = "few clouds"
@@ -145,4 +131,14 @@ enum WeatherDescription: String {
     case brokenClouds = "broken clouds"
     case scatteredClouds = "scattered clouds"
     case lightRain = "light rain"
+}
+
+extension String {
+    func capitalizingFirstLetter() -> String {
+      return prefix(1).uppercased() + self.lowercased().dropFirst()
+    }
+
+    mutating func capitalizeFirstLetter() {
+      self = self.capitalizingFirstLetter()
+    }
 }
