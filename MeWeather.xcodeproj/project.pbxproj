@@ -55,6 +55,33 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		6300A617288ED4F30066527F /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				63D89F96288800BC00FB076B /* AppDelegate.swift */,
+				63D89F98288800BC00FB076B /* SceneDelegate.swift */,
+			);
+			path = Delegates;
+			sourceTree = "<group>";
+		};
+		6300A618288ED5090066527F /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				63D89F9A288800BC00FB076B /* HomeVC.swift */,
+				6345820A288845AA0052D9D0 /* HomeVCExt.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		6300A619288ED5220066527F /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				6345820C288845DC0052D9D0 /* DataManager.swift */,
+				63D89F9F288800BC00FB076B /* MeWeather.xcdatamodeld */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
 		63D89F8A288800BC00FB076B = {
 			isa = PBXGroup;
 			children = (
@@ -76,15 +103,12 @@
 		63D89F95288800BC00FB076B /* MeWeather */ = {
 			isa = PBXGroup;
 			children = (
-				63D89F96288800BC00FB076B /* AppDelegate.swift */,
-				63D89F98288800BC00FB076B /* SceneDelegate.swift */,
-				63D89F9A288800BC00FB076B /* HomeVC.swift */,
-				6345820A288845AA0052D9D0 /* HomeVCExt.swift */,
+				6300A617288ED4F30066527F /* Delegates */,
+				6300A618288ED5090066527F /* Home */,
+				6300A619288ED5220066527F /* Data */,
 				63D89FA2288800BD00FB076B /* Assets.xcassets */,
 				63D89FA4288800BD00FB076B /* LaunchScreen.storyboard */,
 				63D89FA7288800BD00FB076B /* Info.plist */,
-				63D89F9F288800BC00FB076B /* MeWeather.xcdatamodeld */,
-				6345820C288845DC0052D9D0 /* DataManager.swift */,
 			);
 			path = MeWeather;
 			sourceTree = "<group>";
