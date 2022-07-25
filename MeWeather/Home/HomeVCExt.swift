@@ -31,14 +31,15 @@ extension HomeVC: UISearchBarDelegate {
                         let weatherItem = data[0]
                         let lat = weatherItem["lat"] as? Double ?? 0.0
                         let lon = weatherItem["lon"] as? Double ?? 0.0
-                        self.requestWeatherData(lat: lat, lon: lon)
+                        self.requestCurrentWeatherData(lat: lat, lon: lon)
+                        self.requestHourlyForecast(lat: lat, lon: lon)
                     }
                 }
             }
         }
     }
     
-    func requestWeatherData(lat: Double, lon: Double) {
+    func requestCurrentWeatherData(lat: Double, lon: Double) {
         let apiKey = "a2b0437bab1e6c84f259746c0914bb08"
         AF.request("https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
             switch response.result {
@@ -50,7 +51,7 @@ extension HomeVC: UISearchBarDelegate {
                 networkErrorAlert.addAction(okAction)
                 self.present(networkErrorAlert, animated: true, completion: nil)
             case .success(let data):
-                print("Weather Data: \(data)")
+                print("Current Weather Data: \(data)")
                 guard let data = data as? [String: Any] else {
                     return
                 }
@@ -77,31 +78,76 @@ extension HomeVC: UISearchBarDelegate {
                     let weatherItem = weatherData[0]
                     let description = weatherItem["description"] as? String ?? "Description"
                     self.descriptionLabel.text = description.capitalizingFirstLetter()
-                    
-                    switch description {
-                    case "clear sky":
-                        self.weatherIcon.image = UIImage(systemName: "sun.max.fill")?.withRenderingMode(.alwaysOriginal)
-                    case "few clouds":
-                        self.weatherIcon.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
-                    case "overcast clouds":
-                        self.weatherIcon.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
-                    case "broken clouds":
-                        self.weatherIcon.image = UIImage(systemName: "cloud.fill")?.withRenderingMode(.alwaysOriginal)
-                    case "scattered clouds":
-                        self.weatherIcon.image = UIImage(systemName: "smoke.fill")?.withRenderingMode(.alwaysOriginal)
-                    case "light rain":
-                        self.weatherIcon.image = UIImage(systemName: "cloud.hail.fill")?.withRenderingMode(.alwaysOriginal)
-                    case "heavy rain":
-                        self.weatherIcon.image = UIImage(systemName: "cloud.heavyrain.fill")?.withRenderingMode(.alwaysOriginal)
-                    default:
-                        self.weatherIcon.image = UIImage(systemName: "cloud.fill")?.withRenderingMode(.alwaysOriginal)
-                    }
+                    self.descriptionToImage(description: description)
                 }
                 
                 self.cityLabel.text = "\(String(describing: cityName)), \(String(describing: countryName))"
                 self.tempLabel.text = "\(tempInt)°"
             }
         }
+    }
+    
+    func requestHourlyForecast(lat: Double, lon: Double) {
+        let apiKey = "a2b0437bab1e6c84f259746c0914bb08"
+        AF.request("https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
+            switch response.result {
+            case .failure:
+                let networkErrorAlert = UIAlertController(title: "Network Error", message: "Something wrong happened", preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "OK", style: .default) { [self] (action) in
+                    self.dismiss(animated: true)
+                }
+                networkErrorAlert.addAction(okAction)
+                self.present(networkErrorAlert, animated: true, completion: nil)
+            case .success(let data):
+                print("Hourly Forecast Weather Data: \(data)")
+                guard let data = data as? [String: Any] else {
+                    return
+                }
+            }
+        }
+    }
+    
+    func descriptionToImage(description: String) {
+        switch description {
+        case "clear sky":
+            self.weatherIcon.image = UIImage(systemName: "sun.max.fill")?.withRenderingMode(.alwaysOriginal)
+        case "few clouds":
+            self.weatherIcon.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
+        case "overcast clouds":
+            self.weatherIcon.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
+        case "broken clouds":
+            self.weatherIcon.image = UIImage(systemName: "cloud.fill")?.withRenderingMode(.alwaysOriginal)
+        case "scattered clouds":
+            self.weatherIcon.image = UIImage(systemName: "smoke.fill")?.withRenderingMode(.alwaysOriginal)
+        case "light rain":
+            self.weatherIcon.image = UIImage(systemName: "cloud.hail.fill")?.withRenderingMode(.alwaysOriginal)
+        case "heavy rain":
+            self.weatherIcon.image = UIImage(systemName: "cloud.heavyrain.fill")?.withRenderingMode(.alwaysOriginal)
+        default:
+            self.weatherIcon.image = UIImage(systemName: "cloud.fill")?.withRenderingMode(.alwaysOriginal)
+        }
+    }
+}
+
+class DailyWeatherView: UIView {
+    var temperature: Int
+    var weatherDescription: String
+
+    init(temperature: Int, weatherDescription: String) {
+        self.temperature = temperature
+        self.weatherDescription = weatherDescription
+        super.init(frame: .zero)
+        setupUI()
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setupUI() {
+        translatesAutoresizingMaskIntoConstraints = false
+        backgroundColor = .systemGray5
+        layer.cornerRadius = 10
     }
 }
 
@@ -124,15 +170,6 @@ extension HomeVC: UIImagePickerControllerDelegate, UINavigationControllerDelegat
     }
 }
 
-enum WeatherDescription: String {
-    case clearSky = "clear sky"
-    case fewClouds = "few clouds"
-    case overcastClouds = "overcast clouds"
-    case brokenClouds = "broken clouds"
-    case scatteredClouds = "scattered clouds"
-    case lightRain = "light rain"
-}
-
 extension String {
     func capitalizingFirstLetter() -> String {
       return prefix(1).uppercased() + self.lowercased().dropFirst()
@@ -141,4 +178,10 @@ extension String {
     mutating func capitalizeFirstLetter() {
       self = self.capitalizingFirstLetter()
     }
+}
+
+enum Fonts {
+    static let heavy = "Avenir-Heavy"
+    static let medium = "Avenir-Medium"
+    static let light = "Avenir-Light"
 }

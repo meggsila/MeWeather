@@ -111,6 +111,28 @@ class HomeVC: UIViewController {
         label.text = "Partially cloudy"
         return label
     }()
+    
+    var dailyWeatherLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .clear
+        label.textColor = .label
+        label.font = UIFont(name: Fonts.heavy , size: 17)
+        label.textAlignment = .left
+        label.text = "Daily Forecast"
+        return label
+    }()
+    
+    var dailyWeatherStack: UIStackView = {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.backgroundColor = .clear
+        stack.axis = .horizontal
+        stack.spacing = 10
+        stack.alignment = .center
+        stack.distribution = .fillEqually
+        return stack
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -118,6 +140,7 @@ class HomeVC: UIViewController {
         setupProfileSection()
         setupSearchController()
         setupDashboard()
+        setupDailyForecastViews()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -206,6 +229,40 @@ class HomeVC: UIViewController {
         ])
     }
     
+    private func setupDailyForecastViews() {
+        view.addSubview(dailyWeatherLabel)
+        view.addSubview(dailyWeatherStack)
+        
+        NSLayoutConstraint.activate([
+            dailyWeatherLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
+            dailyWeatherLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
+            dailyWeatherLabel.heightAnchor.constraint(equalToConstant: 17),
+            dailyWeatherLabel.topAnchor.constraint(equalTo: dashboard.bottomAnchor, constant: 20),
+            
+            dailyWeatherStack.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
+            dailyWeatherStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
+            dailyWeatherStack.heightAnchor.constraint(equalToConstant: 210),
+            dailyWeatherStack.topAnchor.constraint(equalTo: dailyWeatherLabel.bottomAnchor, constant: 20)
+        ])
+        
+        let day1View = DailyWeatherView(temperature: 23, weatherDescription: "test")
+        let day2View = DailyWeatherView(temperature: 23, weatherDescription: "test")
+        let day3View = DailyWeatherView(temperature: 23, weatherDescription: "test")
+        let day4View = DailyWeatherView(temperature: 23, weatherDescription: "test")
+
+        dailyWeatherStack.addArrangedSubview(day1View)
+        dailyWeatherStack.addArrangedSubview(day2View)
+        dailyWeatherStack.addArrangedSubview(day3View)
+        dailyWeatherStack.addArrangedSubview(day4View)
+
+        NSLayoutConstraint.activate([
+            day1View.heightAnchor.constraint(equalToConstant: 210),
+            day2View.heightAnchor.constraint(equalToConstant: 210),
+            day3View.heightAnchor.constraint(equalToConstant: 210),
+            day4View.heightAnchor.constraint(equalToConstant: 210)
+        ])
+    }
+    
     @objc
     func uploadImage() {
         let picker = UIImagePickerController()
@@ -218,18 +275,12 @@ class HomeVC: UIViewController {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths[0]
     }
+    
     func localDate() -> String {
-        
         let date = Date()
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "EEEE, dd MMMM"
         let yearString = dateFormatter.string(from: date)
         return yearString
     }
-}
-
-enum Fonts {
-    static let heavy = "Avenir-Heavy"
-    static let medium = "Avenir-Medium"
-    static let light = "Avenir-Light"
 }
