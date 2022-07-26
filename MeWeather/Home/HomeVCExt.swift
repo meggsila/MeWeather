@@ -89,7 +89,7 @@ extension HomeVC: UISearchBarDelegate {
     
     func requestHourlyForecast(lat: Double, lon: Double) {
         let apiKey = "a2b0437bab1e6c84f259746c0914bb08"
-        AF.request("https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
+        AF.request("https://api.openweathermap.org/data/2.5/forecast?lat=\(lat)&lon=\(lon)&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
             switch response.result {
             case .failure:
                 let networkErrorAlert = UIAlertController(title: "Network Error", message: "Something wrong happened", preferredStyle: .alert)
@@ -102,6 +102,51 @@ extension HomeVC: UISearchBarDelegate {
                 print("Hourly Forecast Weather Data: \(data)")
                 guard let data = data as? [String: Any] else {
                     return
+                }
+                
+                guard let weatherList = data["list"] as? [[String: Any]] else {
+                    return
+                }
+                
+                if weatherList.isEmpty == false {
+                    for i in 0..<4 {
+                        let weatherItem = weatherList[i]
+                        
+                        guard let main = weatherItem["main"] as? [String: Any] else {
+                            return
+                        }
+                        
+//                        guard let weatherData = data["weather"] as? [[String: Any]] else {
+//                            return
+//                        }
+                        
+                        let tempKelvin = main["temp"] as? Double ?? 0.0
+                        let tempCelcius = tempKelvin - 273.15
+                        let tempInt = Int(tempCelcius)
+                        
+                        let tempFeelsLikeKelvin = main["feels_like"] as? Double ?? 0.0
+                        let tempFeelsLikeCelcius = tempFeelsLikeKelvin - 273.15
+                        let tempFeelsLikeInt = Int(tempFeelsLikeCelcius)
+                        
+                        let tempMaxKelvin = main["temp_max"] as? Double ?? 0.0
+                        let tempMaxCelcius = tempMaxKelvin - 273.15
+                        let tempMaxInt = Int(tempMaxCelcius)
+                        
+                        let tempMinKelvin = main["temp_min"] as? Double ?? 0.0
+                        let tempMinCelcius = tempMinKelvin - 273.15
+                        let tempMinInt = Int(tempMinCelcius)
+                        
+                        print("temp in celcius is \(tempInt), feels like \(tempFeelsLikeInt), temp max \(tempMaxInt), min \(tempMinInt)")
+                        
+                        self.dailyWeatherViewsArray[i].tempLabel.text = "\(tempInt)°"
+                        self.dailyWeatherViewsArray[i].dataLabel.text = "Feels like \(tempFeelsLikeInt)°, Max: \(tempMaxInt)°, Min: \(tempMinInt)°"
+
+                        
+//                        if weatherData.isEmpty == false {
+//                            let item = weatherData[0]
+//                            let description = item["description"] as? String ?? "Description"
+//                        }
+                    }
                 }
             }
         }
@@ -130,10 +175,56 @@ extension HomeVC: UISearchBarDelegate {
 }
 
 class DailyWeatherView: UIView {
+    var day: String
     var temperature: Int
     var weatherDescription: String
+    
+    var dayLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .clear
+        label.textColor = .label
+        label.font = UIFont(name: Fonts.heavy , size: 15)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    var weatherIcon: UIImageView = {
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.backgroundColor = .clear
+        image.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
+        image.contentMode = .scaleAspectFit
+        image.layer.cornerRadius = 10
+        return image
+    }()
+    
+    var tempLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .clear
+        label.textColor = .label
+        label.font = UIFont(name: Fonts.heavy , size: 40)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    var dataLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .clear
+        label.textColor = .secondaryLabel
+        label.font = UIFont(name: Fonts.medium , size: 12)
+        label.textAlignment = .center
+        label.text = "Feels like 27°, Max: 30°, Min: 17°"
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 2
+        return label
+    }()
 
-    init(temperature: Int, weatherDescription: String) {
+
+    init(day: String, temperature: Int, weatherDescription: String) {
+        self.day = day
         self.temperature = temperature
         self.weatherDescription = weatherDescription
         super.init(frame: .zero)
@@ -148,6 +239,35 @@ class DailyWeatherView: UIView {
         translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = .systemGray5
         layer.cornerRadius = 10
+        addSubview(dayLabel)
+        addSubview(weatherIcon)
+        addSubview(tempLabel)
+        addSubview(dataLabel)
+        
+        dayLabel.text = day
+        tempLabel.text = "\(temperature)°"
+        
+        NSLayoutConstraint.activate([
+            dayLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+            dayLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
+            dayLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            dayLabel.heightAnchor.constraint(equalToConstant: 15),
+            
+            weatherIcon.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+            weatherIcon.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
+            weatherIcon.topAnchor.constraint(equalTo: dayLabel.bottomAnchor, constant: 10),
+            weatherIcon.heightAnchor.constraint(equalToConstant: 50),
+            
+            tempLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+            tempLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
+            tempLabel.topAnchor.constraint(equalTo: weatherIcon.bottomAnchor, constant: 10),
+            tempLabel.heightAnchor.constraint(equalToConstant: 40),
+            
+            dataLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+            dataLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
+            dataLabel.topAnchor.constraint(equalTo: tempLabel.bottomAnchor, constant: 10),
+            dataLabel.heightAnchor.constraint(equalToConstant: 40),
+        ])
     }
 }
 

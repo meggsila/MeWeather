@@ -133,6 +133,8 @@ class HomeVC: UIViewController {
         stack.distribution = .fillEqually
         return stack
     }()
+    
+    var dailyWeatherViewsArray = [DailyWeatherView]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -245,10 +247,15 @@ class HomeVC: UIViewController {
             dailyWeatherStack.topAnchor.constraint(equalTo: dailyWeatherLabel.bottomAnchor, constant: 20)
         ])
         
-        let day1View = DailyWeatherView(temperature: 23, weatherDescription: "test")
-        let day2View = DailyWeatherView(temperature: 23, weatherDescription: "test")
-        let day3View = DailyWeatherView(temperature: 23, weatherDescription: "test")
-        let day4View = DailyWeatherView(temperature: 23, weatherDescription: "test")
+        let day1View = DailyWeatherView(day: "Mon", temperature: 23, weatherDescription: "test")
+        let day2View = DailyWeatherView(day: "Tue", temperature: 24, weatherDescription: "test")
+        let day3View = DailyWeatherView(day: "Wed", temperature: 25, weatherDescription: "test")
+        let day4View = DailyWeatherView(day: "Thur", temperature: 22, weatherDescription: "test")
+        
+        dailyWeatherViewsArray.append(day1View)
+        dailyWeatherViewsArray.append(day2View)
+        dailyWeatherViewsArray.append(day3View)
+        dailyWeatherViewsArray.append(day4View)
 
         dailyWeatherStack.addArrangedSubview(day1View)
         dailyWeatherStack.addArrangedSubview(day2View)
