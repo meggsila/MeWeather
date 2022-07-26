@@ -175,10 +175,6 @@ extension HomeVC: UISearchBarDelegate {
 }
 
 class DailyWeatherView: UIView {
-    var day: String
-    var temperature: Int
-    var weatherDescription: String
-    
     var dayLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -186,6 +182,7 @@ class DailyWeatherView: UIView {
         label.textColor = .label
         label.font = UIFont(name: Fonts.heavy , size: 15)
         label.textAlignment = .center
+        label.text = "Day"
         return label
     }()
     
@@ -206,6 +203,7 @@ class DailyWeatherView: UIView {
         label.textColor = .label
         label.font = UIFont(name: Fonts.heavy , size: 40)
         label.textAlignment = .center
+        label.text = "21°"
         return label
     }()
     
@@ -223,10 +221,7 @@ class DailyWeatherView: UIView {
     }()
 
 
-    init(day: String, temperature: Int, weatherDescription: String) {
-        self.day = day
-        self.temperature = temperature
-        self.weatherDescription = weatherDescription
+    init() {
         super.init(frame: .zero)
         setupUI()
     }
@@ -243,9 +238,6 @@ class DailyWeatherView: UIView {
         addSubview(weatherIcon)
         addSubview(tempLabel)
         addSubview(dataLabel)
-        
-        dayLabel.text = day
-        tempLabel.text = "\(temperature)°"
         
         NSLayoutConstraint.activate([
             dayLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
@@ -288,20 +280,4 @@ extension HomeVC: UIImagePickerControllerDelegate, UINavigationControllerDelegat
             }
         }
     }
-}
-
-extension String {
-    func capitalizingFirstLetter() -> String {
-      return prefix(1).uppercased() + self.lowercased().dropFirst()
-    }
-
-    mutating func capitalizeFirstLetter() {
-      self = self.capitalizingFirstLetter()
-    }
-}
-
-enum Fonts {
-    static let heavy = "Avenir-Heavy"
-    static let medium = "Avenir-Medium"
-    static let light = "Avenir-Light"
 }

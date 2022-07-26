@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3BCECC98C4B8AF7E74C2A5DA /* Pods_MeWeather.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF5CADB2184FD36333E2A859 /* Pods_MeWeather.framework */; };
+		630E4FEB2890347300EBF225 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 630E4FEA2890347300EBF225 /* Extensions.swift */; };
 		6345820B288845AA0052D9D0 /* HomeVCExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6345820A288845AA0052D9D0 /* HomeVCExt.swift */; };
 		6345820D288845DC0052D9D0 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6345820C288845DC0052D9D0 /* DataManager.swift */; };
 		63D89F97288800BC00FB076B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D89F96288800BC00FB076B /* AppDelegate.swift */; };
@@ -21,6 +22,7 @@
 /* Begin PBXFileReference section */
 		1649830554731FB4B0D3F10E /* Pods-MeWeather.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MeWeather.release.xcconfig"; path = "Target Support Files/Pods-MeWeather/Pods-MeWeather.release.xcconfig"; sourceTree = "<group>"; };
 		5F2F4B95F46AD14005D6EEF2 /* Pods-MeWeather.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MeWeather.debug.xcconfig"; path = "Target Support Files/Pods-MeWeather/Pods-MeWeather.debug.xcconfig"; sourceTree = "<group>"; };
+		630E4FEA2890347300EBF225 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		6345820A288845AA0052D9D0 /* HomeVCExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVCExt.swift; sourceTree = "<group>"; };
 		6345820C288845DC0052D9D0 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		63D89F93288800BC00FB076B /* MeWeather.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeWeather.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -109,6 +111,7 @@
 				63D89FA2288800BD00FB076B /* Assets.xcassets */,
 				63D89FA4288800BD00FB076B /* LaunchScreen.storyboard */,
 				63D89FA7288800BD00FB076B /* Info.plist */,
+				630E4FEA2890347300EBF225 /* Extensions.swift */,
 			);
 			path = MeWeather;
 			sourceTree = "<group>";
@@ -241,6 +244,7 @@
 				63D89F9B288800BC00FB076B /* HomeVC.swift in Sources */,
 				63D89F97288800BC00FB076B /* AppDelegate.swift in Sources */,
 				63D89F99288800BC00FB076B /* SceneDelegate.swift in Sources */,
+				630E4FEB2890347300EBF225 /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -247,10 +247,10 @@ class HomeVC: UIViewController {
             dailyWeatherStack.topAnchor.constraint(equalTo: dailyWeatherLabel.bottomAnchor, constant: 20)
         ])
         
-        let day1View = DailyWeatherView(day: "Mon", temperature: 23, weatherDescription: "test")
-        let day2View = DailyWeatherView(day: "Tue", temperature: 24, weatherDescription: "test")
-        let day3View = DailyWeatherView(day: "Wed", temperature: 25, weatherDescription: "test")
-        let day4View = DailyWeatherView(day: "Thur", temperature: 22, weatherDescription: "test")
+        let day1View = DailyWeatherView()
+        let day2View = DailyWeatherView()
+        let day3View = DailyWeatherView()
+        let day4View = DailyWeatherView()
         
         dailyWeatherViewsArray.append(day1View)
         dailyWeatherViewsArray.append(day2View)
