@@ -89,7 +89,7 @@ extension HomeVC: UISearchBarDelegate {
     
     func requestHourlyForecast(lat: Double, lon: Double) {
         let apiKey = "a2b0437bab1e6c84f259746c0914bb08"
-        AF.request("https://api.openweathermap.org/data/2.5/forecast?lat=\(lat)&lon=\(lon)&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
+        AF.request("https://api.openweathermap.org/data/2.5/forecast?lat=\(lat)&lon=\(lon)&cnt=4&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
             switch response.result {
             case .failure:
                 let networkErrorAlert = UIAlertController(title: "Network Error", message: "Something wrong happened", preferredStyle: .alert)
@@ -109,7 +109,7 @@ extension HomeVC: UISearchBarDelegate {
                 }
                 
                 if weatherList.isEmpty == false {
-                    for i in 0..<4 {
+                    for i in 0..<weatherList.count {
                         let weatherItem = weatherList[i]
                         
                         guard let main = weatherItem["main"] as? [String: Any] else {
@@ -135,9 +135,7 @@ extension HomeVC: UISearchBarDelegate {
                         let tempMinKelvin = main["temp_min"] as? Double ?? 0.0
                         let tempMinCelcius = tempMinKelvin - 273.15
                         let tempMinInt = Int(tempMinCelcius)
-                        
-                        print("temp in celcius is \(tempInt), feels like \(tempFeelsLikeInt), temp max \(tempMaxInt), min \(tempMinInt)")
-                        
+                                                
                         self.dailyWeatherViewsArray[i].tempLabel.text = "\(tempInt)°"
                         self.dailyWeatherViewsArray[i].dataLabel.text = "Feels like \(tempFeelsLikeInt)°, Max: \(tempMaxInt)°, Min: \(tempMinInt)°"
 
