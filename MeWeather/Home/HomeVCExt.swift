@@ -78,7 +78,7 @@ extension HomeVC: UISearchBarDelegate {
                     let weatherItem = weatherData[0]
                     let description = weatherItem["description"] as? String ?? "Description"
                     self.descriptionLabel.text = description.capitalizingFirstLetter()
-                    self.descriptionToImage(description: description)
+                    self.descriptionToImage(description: description, imagevIew: self.weatherIcon)
                 }
                 
                 self.cityLabel.text = "\(String(describing: cityName)), \(String(describing: countryName))"
@@ -116,9 +116,19 @@ extension HomeVC: UISearchBarDelegate {
                             return
                         }
                         
-//                        guard let weatherData = data["weather"] as? [[String: Any]] else {
-//                            return
-//                        }
+                        print("Weather item \(i + 1): \(weatherItem)")
+                        
+                        guard let weatherData = weatherItem["weather"] as? [[String: Any]] else {
+                            return
+                        }
+                        
+                        let textDate = weatherItem["dt"] as? Int ?? 0
+                        if weatherData.isEmpty == false {
+                            let item = weatherData[0]
+                            let description = item["description"] as? String ?? "Description"
+                            print("description is \(description)")
+                            self.descriptionToImage(description: description, imagevIew: self.dailyWeatherViewsArray[i].weatherIcon)
+                        }
                         
                         let tempKelvin = main["temp"] as? Double ?? 0.0
                         let tempCelcius = tempKelvin - 273.15
@@ -135,40 +145,39 @@ extension HomeVC: UISearchBarDelegate {
                         let tempMinKelvin = main["temp_min"] as? Double ?? 0.0
                         let tempMinCelcius = tempMinKelvin - 273.15
                         let tempMinInt = Int(tempMinCelcius)
-                                                
-                        self.dailyWeatherViewsArray[i].tempLabel.text = "\(tempInt)°"
-                        self.dailyWeatherViewsArray[i].dataLabel.text = "Feels like \(tempFeelsLikeInt)°, Max: \(tempMaxInt)°, Min: \(tempMinInt)°"
-
                         
-//                        if weatherData.isEmpty == false {
-//                            let item = weatherData[0]
-//                            let description = item["description"] as? String ?? "Description"
-//                        }
+                        self.dailyWeatherViewsArray[i].dayLabel.text = "\(textDate)"
+                        self.dailyWeatherViewsArray[i].dataLabel.text = "Feels like \(tempFeelsLikeInt)°, Max: \(tempMaxInt)°, Min: \(tempMinInt)°"
+                        self.dailyWeatherViewsArray[i].tempLabel.text = "\(tempInt)°"
                     }
                 }
             }
         }
     }
     
-    func descriptionToImage(description: String) {
+    func descriptionToImage(description: String, imagevIew: UIImageView) {
         switch description {
         case "clear sky":
-            self.weatherIcon.image = UIImage(systemName: "sun.max.fill")?.withRenderingMode(.alwaysOriginal)
+            imagevIew.image = UIImage(systemName: "sun.max.fill")?.withRenderingMode(.alwaysOriginal)
         case "few clouds":
-            self.weatherIcon.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
+            imagevIew.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
         case "overcast clouds":
-            self.weatherIcon.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
+            imagevIew.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
         case "broken clouds":
-            self.weatherIcon.image = UIImage(systemName: "cloud.fill")?.withRenderingMode(.alwaysOriginal)
+            imagevIew.image = UIImage(systemName: "cloud.fill")?.withRenderingMode(.alwaysOriginal)
         case "scattered clouds":
-            self.weatherIcon.image = UIImage(systemName: "smoke.fill")?.withRenderingMode(.alwaysOriginal)
+            imagevIew.image = UIImage(systemName: "smoke.fill")?.withRenderingMode(.alwaysOriginal)
         case "light rain":
-            self.weatherIcon.image = UIImage(systemName: "cloud.hail.fill")?.withRenderingMode(.alwaysOriginal)
+            imagevIew.image = UIImage(systemName: "cloud.hail.fill")?.withRenderingMode(.alwaysOriginal)
         case "heavy rain":
-            self.weatherIcon.image = UIImage(systemName: "cloud.heavyrain.fill")?.withRenderingMode(.alwaysOriginal)
+            imagevIew.image = UIImage(systemName: "cloud.heavyrain.fill")?.withRenderingMode(.alwaysOriginal)
         default:
-            self.weatherIcon.image = UIImage(systemName: "cloud.fill")?.withRenderingMode(.alwaysOriginal)
+            imagevIew.image = UIImage(systemName: "cloud.fill")?.withRenderingMode(.alwaysOriginal)
         }
+    }
+    
+    func timestampToHour(timestamp: Int) -> String {
+        return ""
     }
 }
 
