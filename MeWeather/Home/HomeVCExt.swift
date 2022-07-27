@@ -10,7 +10,7 @@ import Alamofire
 
 extension HomeVC: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        let apiKey = "a2b0437bab1e6c84f259746c0914bb08"
+        let apiKey = ""
         let cityName = searchText
         if searchText.count > 2 {
             DispatchQueue.main.async {
@@ -43,7 +43,7 @@ extension HomeVC: UISearchBarDelegate {
     }
     
     func requestCurrentWeatherData(lat: Double, lon: Double) {
-        let apiKey = "a2b0437bab1e6c84f259746c0914bb08"
+        let apiKey = ""
         DispatchQueue.main.async {
             AF.request("https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
                 switch response.result {
@@ -93,7 +93,7 @@ extension HomeVC: UISearchBarDelegate {
     }
     
     func requestHourlyForecast(lat: Double, lon: Double) {
-        let apiKey = "a2b0437bab1e6c84f259746c0914bb08"
+        let apiKey = ""
         DispatchQueue.main.async {
             AF.request("https://api.openweathermap.org/data/2.5/forecast?lat=\(lat)&lon=\(lon)&cnt=4&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
                 switch response.result {
@@ -157,19 +157,19 @@ extension HomeVC: UISearchBarDelegate {
     func descriptionToImage(description: String, imagevIew: UIImageView, time: String) {
         switch description {
         case "clear sky":
-            if time == "21:00" || time == "00:00" {
+            if time == "21:00" || time == "00:00" || time == "03:00" {
                 imagevIew.image = UIImage(systemName: "moon.stars.fill")?.withRenderingMode(.alwaysOriginal)
             } else {
                 imagevIew.image = UIImage(systemName: "sun.max.fill")?.withRenderingMode(.alwaysOriginal)
             }
         case "few clouds":
-            if time == "21:00" || time == "00:00" {
+            if time == "21:00" || time == "00:00" || time == "03:00" {
                 imagevIew.image = UIImage(systemName: "cloud.moon.fill")?.withRenderingMode(.alwaysOriginal)
             } else {
                 imagevIew.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
             }
         case "overcast clouds":
-            if time == "21:00" || time == "00:00" {
+            if time == "21:00" || time == "00:00" || time == "03:00" {
                 imagevIew.image = UIImage(systemName: "cloud.moon.fill")?.withRenderingMode(.alwaysOriginal)
             } else {
                 imagevIew.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
@@ -179,13 +179,13 @@ extension HomeVC: UISearchBarDelegate {
         case "scattered clouds":
             imagevIew.image = UIImage(systemName: "smoke.fill")?.withRenderingMode(.alwaysOriginal)
         case "light rain":
-            if time == "21:00" || time == "00:00" {
+            if time == "21:00" || time == "00:00" || time == "03:00" {
                 imagevIew.image = UIImage(systemName: "cloud.moon.rain.fill")?.withRenderingMode(.alwaysOriginal)
             } else {
                 imagevIew.image = UIImage(systemName: "cloud.hail.fill")?.withRenderingMode(.alwaysOriginal)
             }
         case "heavy rain":
-            if time == "21:00" || time == "00:00" {
+            if time == "21:00" || time == "00:00" || time == "03:00" {
                 imagevIew.image = UIImage(systemName: "cloud.moon.bolt.fill")?.withRenderingMode(.alwaysOriginal)
             } else {
                 imagevIew.image = UIImage(systemName: "cloud.heavyrain.fill")?.withRenderingMode(.alwaysOriginal)
