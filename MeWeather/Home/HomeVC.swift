@@ -10,6 +10,16 @@ import Alamofire
 
 class HomeVC: UIViewController {
     // MARK: - Profile Section
+    
+    var mainScroll: UIScrollView = {
+        let scroll = UIScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        scroll.isScrollEnabled = true
+        scroll.backgroundColor = .clear
+        scroll.showsVerticalScrollIndicator = false
+        return scroll
+    }()
+    
     let profileImage: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -151,6 +161,7 @@ class HomeVC: UIViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         view.addGestureRecognizer(tap)
         
+        setupMainScroll()
         setupProfileSection()
         setupSearchController()
         setupDashboard()
@@ -160,6 +171,18 @@ class HomeVC: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
         dateLabel.text = localDate()
+    }
+    
+    func setupMainScroll() {
+        view.addSubview(mainScroll)
+        mainScroll.contentSize.height = view.frame.height + 50
+
+        NSLayoutConstraint.activate([
+            mainScroll.topAnchor.constraint(equalTo: view.topAnchor),
+            mainScroll.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mainScroll.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mainScroll.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
     
     private func setupProfileSection() {
@@ -193,18 +216,18 @@ class HomeVC: UIViewController {
     private func setupSearchController() {
         searchBar.frame = CGRect(x: 0, y: 50 + 110 + 10, width: view.frame.width, height: 50)
         searchBar.delegate = self
-        view.addSubview(searchBar)
+        mainScroll.addSubview(searchBar)
     }
     
     private func setupDashboard() {
-        view.addSubview(dashboard)
-        view.addSubview(noDataLabel)
-        view.addSubview(todayLabel)
-        view.addSubview(weatherIcon)
-        view.addSubview(cityLabel)
-        view.addSubview(dateLabel)
-        view.addSubview(tempLabel)
-        view.addSubview(descriptionLabel)
+        mainScroll.addSubview(dashboard)
+        mainScroll.addSubview(noDataLabel)
+        mainScroll.addSubview(todayLabel)
+        mainScroll.addSubview(weatherIcon)
+        mainScroll.addSubview(cityLabel)
+        mainScroll.addSubview(dateLabel)
+        mainScroll.addSubview(tempLabel)
+        mainScroll.addSubview(descriptionLabel)
         
         NSLayoutConstraint.activate([
             dashboard.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
@@ -252,8 +275,8 @@ class HomeVC: UIViewController {
     }
     
     private func setupHourlyForecastViews() {
-        view.addSubview(hourlyWeatherLabel)
-        view.addSubview(hourlyWeatherStack)
+        mainScroll.addSubview(hourlyWeatherLabel)
+        mainScroll.addSubview(hourlyWeatherStack)
         
         NSLayoutConstraint.activate([
             hourlyWeatherLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),

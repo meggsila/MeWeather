@@ -236,6 +236,7 @@ class HourlyWeatherView: UIView {
         label.backgroundColor = .clear
         label.textColor = .label
         label.font = UIFont(name: Fonts.heavy , size: 40)
+        label.adjustsFontSizeToFitWidth = true
         label.textAlignment = .center
         return label
     }()
