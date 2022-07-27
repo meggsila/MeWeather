@@ -41,155 +41,181 @@ extension HomeVC: UISearchBarDelegate {
     
     func requestCurrentWeatherData(lat: Double, lon: Double) {
         let apiKey = "a2b0437bab1e6c84f259746c0914bb08"
-        AF.request("https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
-            switch response.result {
-            case .failure:
-                let networkErrorAlert = UIAlertController(title: "Network Error", message: "Something wrong happened", preferredStyle: .alert)
-                let okAction = UIAlertAction(title: "OK", style: .default) { [self] (action) in
-                    self.dismiss(animated: true)
+        DispatchQueue.main.async {
+            AF.request("https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
+                switch response.result {
+                case .failure:
+                    let networkErrorAlert = UIAlertController(title: "Network Error", message: "Something wrong happened", preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "OK", style: .default) { [self] (action) in
+                        self.dismiss(animated: true)
+                    }
+                    networkErrorAlert.addAction(okAction)
+                    self.present(networkErrorAlert, animated: true, completion: nil)
+                case .success(let data):
+                    self.noDataLabel.isHidden = true
+                    
+                    guard let data = data as? [String: Any] else {
+                        return
+                    }
+                    
+                    guard let sys = data["sys"] as? [String: Any] else {
+                        return
+                    }
+                    
+                    guard let main = data["main"] as? [String: Any] else {
+                        return
+                    }
+                    
+                    guard let weatherData = data["weather"] as? [[String: Any]] else {
+                        return
+                    }
+                    
+                    let cityName = data["name"] as? String ?? "City"
+                    let countryName = sys["country"] as? String ?? "Country"
+                    let tempKelvin = main["temp"] as? Double ?? 0.0
+                    let tempCelcius = tempKelvin - 273.15
+                    let tempInt = Int(tempCelcius)
+                    
+                    if weatherData.isEmpty == false {
+                        let weatherItem = weatherData[0]
+                        let description = weatherItem["description"] as? String ?? "Description"
+                        self.descriptionLabel.text = description.capitalizingFirstLetter()
+                        self.descriptionToImage(description: description, imagevIew: self.weatherIcon, time: "")
+                    }
+                    
+                    self.cityLabel.text = "\(String(describing: cityName)), \(String(describing: countryName))"
+                    self.tempLabel.text = "\(tempInt)°"
                 }
-                networkErrorAlert.addAction(okAction)
-                self.present(networkErrorAlert, animated: true, completion: nil)
-            case .success(let data):
-                print("Current Weather Data: \(data)")
-                guard let data = data as? [String: Any] else {
-                    return
-                }
-                
-                guard let sys = data["sys"] as? [String: Any] else {
-                    return
-                }
-                
-                guard let main = data["main"] as? [String: Any] else {
-                    return
-                }
-                
-                guard let weatherData = data["weather"] as? [[String: Any]] else {
-                    return
-                }
- 
-                let cityName = data["name"] as? String ?? "City"
-                let countryName = sys["country"] as? String ?? "Country"
-                let tempKelvin = main["temp"] as? Double ?? 0.0
-                let tempCelcius = tempKelvin - 273.15
-                let tempInt = Int(tempCelcius)
-                
-                if weatherData.isEmpty == false {
-                    let weatherItem = weatherData[0]
-                    let description = weatherItem["description"] as? String ?? "Description"
-                    self.descriptionLabel.text = description.capitalizingFirstLetter()
-                    self.descriptionToImage(description: description, imagevIew: self.weatherIcon)
-                }
-                
-                self.cityLabel.text = "\(String(describing: cityName)), \(String(describing: countryName))"
-                self.tempLabel.text = "\(tempInt)°"
             }
         }
     }
     
     func requestHourlyForecast(lat: Double, lon: Double) {
         let apiKey = "a2b0437bab1e6c84f259746c0914bb08"
-        AF.request("https://api.openweathermap.org/data/2.5/forecast?lat=\(lat)&lon=\(lon)&cnt=4&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
-            switch response.result {
-            case .failure:
-                let networkErrorAlert = UIAlertController(title: "Network Error", message: "Something wrong happened", preferredStyle: .alert)
-                let okAction = UIAlertAction(title: "OK", style: .default) { [self] (action) in
-                    self.dismiss(animated: true)
-                }
-                networkErrorAlert.addAction(okAction)
-                self.present(networkErrorAlert, animated: true, completion: nil)
-            case .success(let data):
-                print("Hourly Forecast Weather Data: \(data)")
-                guard let data = data as? [String: Any] else {
-                    return
-                }
-                
-                guard let weatherList = data["list"] as? [[String: Any]] else {
-                    return
-                }
-                
-                if weatherList.isEmpty == false {
-                    for i in 0..<weatherList.count {
-                        let weatherItem = weatherList[i]
-                        
-                        guard let main = weatherItem["main"] as? [String: Any] else {
-                            return
+        DispatchQueue.main.async {
+            AF.request("https://api.openweathermap.org/data/2.5/forecast?lat=\(lat)&lon=\(lon)&cnt=4&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
+                switch response.result {
+                case .failure:
+                    let networkErrorAlert = UIAlertController(title: "Network Error", message: "Something wrong happened", preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "OK", style: .default) { [self] (action) in
+                        self.dismiss(animated: true)
+                    }
+                    networkErrorAlert.addAction(okAction)
+                    self.present(networkErrorAlert, animated: true, completion: nil)
+                case .success(let data):
+                    guard let data = data as? [String: Any] else {
+                        return
+                    }
+                    
+                    guard let weatherList = data["list"] as? [[String: Any]] else {
+                        return
+                    }
+                    
+                    if weatherList.isEmpty == false {
+                        for i in 0..<weatherList.count {
+                            let weatherItem = weatherList[i]
+                            
+                            guard let main = weatherItem["main"] as? [String: Any] else {
+                                return
+                            }
+                            
+                            guard let weatherData = weatherItem["weather"] as? [[String: Any]] else {
+                                return
+                            }
+                            self.dailyWeatherViewsArray[i].noDataLabel.isHidden = true
+                            
+                            let dateText = weatherItem["dt_txt"] as? String ?? ""
+                            let start = dateText.index(dateText.startIndex, offsetBy: 11)
+                            let end = dateText.index(dateText.endIndex, offsetBy: -3)
+                            let range = start..<end
+                            let formattedTime = dateText[range]
+                            
+                            if weatherData.isEmpty == false {
+                                let item = weatherData[0]
+                                let description = item["description"] as? String ?? "Description"
+                                self.descriptionToImage(description: description, imagevIew: self.dailyWeatherViewsArray[i].weatherIcon, time: String(formattedTime))
+                            }
+                            
+                            let tempKelvin = main["temp"] as? Double ?? 0.0
+                            let tempInt = Int(tempKelvin - 273.15)
+                            
+                            let tempFeelsLikeKelvin = main["feels_like"] as? Double ?? 0.0
+                            let tempFeelsLikeInt = Int(tempFeelsLikeKelvin - 273.15)
+                            
+                            self.dailyWeatherViewsArray[i].timeLabel.text = String(formattedTime)
+                            self.dailyWeatherViewsArray[i].dataLabel.text = "Feels like \(tempFeelsLikeInt)°"
+                            self.dailyWeatherViewsArray[i].tempLabel.text = "\(tempInt)°"
                         }
-                        
-                        print("Weather item \(i + 1): \(weatherItem)")
-                        
-                        guard let weatherData = weatherItem["weather"] as? [[String: Any]] else {
-                            return
-                        }
-                        
-                        let textDate = weatherItem["dt"] as? Int ?? 0
-                        if weatherData.isEmpty == false {
-                            let item = weatherData[0]
-                            let description = item["description"] as? String ?? "Description"
-                            print("description is \(description)")
-                            self.descriptionToImage(description: description, imagevIew: self.dailyWeatherViewsArray[i].weatherIcon)
-                        }
-                        
-                        let tempKelvin = main["temp"] as? Double ?? 0.0
-                        let tempCelcius = tempKelvin - 273.15
-                        let tempInt = Int(tempCelcius)
-                        
-                        let tempFeelsLikeKelvin = main["feels_like"] as? Double ?? 0.0
-                        let tempFeelsLikeCelcius = tempFeelsLikeKelvin - 273.15
-                        let tempFeelsLikeInt = Int(tempFeelsLikeCelcius)
-                        
-                        let tempMaxKelvin = main["temp_max"] as? Double ?? 0.0
-                        let tempMaxCelcius = tempMaxKelvin - 273.15
-                        let tempMaxInt = Int(tempMaxCelcius)
-                        
-                        let tempMinKelvin = main["temp_min"] as? Double ?? 0.0
-                        let tempMinCelcius = tempMinKelvin - 273.15
-                        let tempMinInt = Int(tempMinCelcius)
-                        
-                        self.dailyWeatherViewsArray[i].dayLabel.text = "\(textDate)"
-                        self.dailyWeatherViewsArray[i].dataLabel.text = "Feels like \(tempFeelsLikeInt)°, Max: \(tempMaxInt)°, Min: \(tempMinInt)°"
-                        self.dailyWeatherViewsArray[i].tempLabel.text = "\(tempInt)°"
                     }
                 }
             }
         }
     }
     
-    func descriptionToImage(description: String, imagevIew: UIImageView) {
+    func descriptionToImage(description: String, imagevIew: UIImageView, time: String) {
         switch description {
         case "clear sky":
-            imagevIew.image = UIImage(systemName: "sun.max.fill")?.withRenderingMode(.alwaysOriginal)
+            if time == "21:00" || time == "00:00" {
+                imagevIew.image = UIImage(systemName: "moon.stars.fill")?.withRenderingMode(.alwaysOriginal)
+            } else {
+                imagevIew.image = UIImage(systemName: "sun.max.fill")?.withRenderingMode(.alwaysOriginal)
+            }
         case "few clouds":
-            imagevIew.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
+            if time == "21:00" || time == "00:00" {
+                imagevIew.image = UIImage(systemName: "cloud.moon.fill")?.withRenderingMode(.alwaysOriginal)
+            } else {
+                imagevIew.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
+            }
         case "overcast clouds":
-            imagevIew.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
+            if time == "21:00" || time == "00:00" {
+                imagevIew.image = UIImage(systemName: "cloud.moon.fill")?.withRenderingMode(.alwaysOriginal)
+            } else {
+                imagevIew.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
+            }
         case "broken clouds":
             imagevIew.image = UIImage(systemName: "cloud.fill")?.withRenderingMode(.alwaysOriginal)
         case "scattered clouds":
             imagevIew.image = UIImage(systemName: "smoke.fill")?.withRenderingMode(.alwaysOriginal)
         case "light rain":
-            imagevIew.image = UIImage(systemName: "cloud.hail.fill")?.withRenderingMode(.alwaysOriginal)
+            if time == "21:00" || time == "00:00" {
+                imagevIew.image = UIImage(systemName: "cloud.moon.rain.fill")?.withRenderingMode(.alwaysOriginal)
+            } else {
+                imagevIew.image = UIImage(systemName: "cloud.hail.fill")?.withRenderingMode(.alwaysOriginal)
+            }
         case "heavy rain":
-            imagevIew.image = UIImage(systemName: "cloud.heavyrain.fill")?.withRenderingMode(.alwaysOriginal)
+            if time == "21:00" || time == "00:00" {
+                imagevIew.image = UIImage(systemName: "cloud.moon.bolt.fill")?.withRenderingMode(.alwaysOriginal)
+            } else {
+                imagevIew.image = UIImage(systemName: "cloud.heavyrain.fill")?.withRenderingMode(.alwaysOriginal)
+            }
         default:
             imagevIew.image = UIImage(systemName: "cloud.fill")?.withRenderingMode(.alwaysOriginal)
         }
     }
-    
-    func timestampToHour(timestamp: Int) -> String {
-        return ""
-    }
 }
 
 class DailyWeatherView: UIView {
-    var dayLabel: UILabel = {
+    var noDataLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .clear
+        label.textColor = .secondaryLabel
+        label.font = UIFont(name: Fonts.medium , size: 12)
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 2
+        label.textAlignment = .center
+        label.text = "No data"
+        return label
+    }()
+    
+    var timeLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
         label.textColor = .label
         label.font = UIFont(name: Fonts.heavy , size: 15)
         label.textAlignment = .center
-        label.text = "Day"
+        label.text = ""
         return label
     }()
     
@@ -197,7 +223,6 @@ class DailyWeatherView: UIView {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
         image.backgroundColor = .clear
-        image.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
         image.contentMode = .scaleAspectFit
         image.layer.cornerRadius = 10
         return image
@@ -210,7 +235,6 @@ class DailyWeatherView: UIView {
         label.textColor = .label
         label.font = UIFont(name: Fonts.heavy , size: 40)
         label.textAlignment = .center
-        label.text = "21°"
         return label
     }()
     
@@ -221,18 +245,17 @@ class DailyWeatherView: UIView {
         label.textColor = .secondaryLabel
         label.font = UIFont(name: Fonts.medium , size: 12)
         label.textAlignment = .center
-        label.text = "Feels like 27°, Max: 30°, Min: 17°"
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 2
         return label
     }()
-
-
+    
+    
     init() {
         super.init(frame: .zero)
         setupUI()
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -241,20 +264,27 @@ class DailyWeatherView: UIView {
         translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = .systemGray5
         layer.cornerRadius = 10
-        addSubview(dayLabel)
+        addSubview(noDataLabel)
+        addSubview(timeLabel)
         addSubview(weatherIcon)
         addSubview(tempLabel)
         addSubview(dataLabel)
         
         NSLayoutConstraint.activate([
-            dayLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
-            dayLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
-            dayLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            dayLabel.heightAnchor.constraint(equalToConstant: 15),
+            noDataLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            noDataLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            noDataLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+            noDataLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
+            noDataLabel.widthAnchor.constraint(equalToConstant: 35),
+            
+            timeLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+            timeLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
+            timeLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            timeLabel.heightAnchor.constraint(equalToConstant: 15),
             
             weatherIcon.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
             weatherIcon.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
-            weatherIcon.topAnchor.constraint(equalTo: dayLabel.bottomAnchor, constant: 10),
+            weatherIcon.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 10),
             weatherIcon.heightAnchor.constraint(equalToConstant: 50),
             
             tempLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
@@ -271,7 +301,7 @@ class DailyWeatherView: UIView {
 }
 
 extension HomeVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let userPickedImage = info[.editedImage] as? UIImage else { return }
         profileImage.image = userPickedImage
         let imageName = UUID().uuidString

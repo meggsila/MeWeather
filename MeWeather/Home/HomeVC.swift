@@ -47,6 +47,19 @@ class HomeVC: UIViewController {
         return view
     }()
     
+    var noDataLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .clear
+        label.textColor = .secondaryLabel
+        label.font = UIFont(name: Fonts.medium , size: 17)
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 2
+        label.textAlignment = .center
+        label.text = "No weather data to show yet. Search for a country!"
+        return label
+    }()
+    
     var todayLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -62,7 +75,6 @@ class HomeVC: UIViewController {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
         image.backgroundColor = .clear
-        image.image = UIImage(systemName: "cloud.sun.fill")?.withRenderingMode(.alwaysOriginal)
         image.contentMode = .scaleAspectFit
         image.layer.cornerRadius = 10
         return image
@@ -75,7 +87,6 @@ class HomeVC: UIViewController {
         label.textColor = .secondaryLabel
         label.font = UIFont(name: Fonts.medium , size: 17)
         label.textAlignment = .left
-        label.text = "Paris, FR"
         return label
     }()
     
@@ -97,7 +108,6 @@ class HomeVC: UIViewController {
         label.textAlignment = .right
         label.font = UIFont(name: Fonts.medium , size: 70)
         label.backgroundColor = .clear
-        label.text = "23°"
         return label
     }()
     
@@ -108,7 +118,6 @@ class HomeVC: UIViewController {
         label.textColor = .secondaryLabel
         label.textAlignment = .right
         label.font = UIFont(name: Fonts.medium , size: 17)
-        label.text = "Partially cloudy"
         return label
     }()
     
@@ -119,7 +128,7 @@ class HomeVC: UIViewController {
         label.textColor = .label
         label.font = UIFont(name: Fonts.heavy , size: 17)
         label.textAlignment = .left
-        label.text = "Daily Forecast"
+        label.text = "Hourly Forecast"
         return label
     }()
     
@@ -186,6 +195,7 @@ class HomeVC: UIViewController {
     
     private func setupDashboard() {
         view.addSubview(dashboard)
+        view.addSubview(noDataLabel)
         view.addSubview(todayLabel)
         view.addSubview(weatherIcon)
         view.addSubview(cityLabel)
@@ -198,6 +208,13 @@ class HomeVC: UIViewController {
             dashboard.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
             dashboard.heightAnchor.constraint(equalToConstant: 210),
             dashboard.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 20),
+            
+            noDataLabel.centerXAnchor.constraint(equalTo: dashboard.centerXAnchor),
+            noDataLabel.centerYAnchor.constraint(equalTo: dashboard.centerYAnchor),
+            noDataLabel.rightAnchor.constraint(equalTo: dashboard.rightAnchor, constant: -10),
+            noDataLabel.leftAnchor.constraint(equalTo: dashboard.leftAnchor, constant: 10),
+            noDataLabel.widthAnchor.constraint(equalToConstant: 35),
+           
             
             todayLabel.leftAnchor.constraint(equalTo: dashboard.leftAnchor, constant: 10),
             todayLabel.heightAnchor.constraint(equalToConstant: 20),
@@ -216,7 +233,7 @@ class HomeVC: UIViewController {
             
             dateLabel.rightAnchor.constraint(equalTo: dashboard.rightAnchor, constant: -10),
             dateLabel.heightAnchor.constraint(equalToConstant: 20),
-            dateLabel.widthAnchor.constraint(equalToConstant: 210 - 2 * ( 20 + 10 + 10)),
+            dateLabel.leftAnchor.constraint(equalTo: todayLabel.leftAnchor, constant: 10),
             dateLabel.topAnchor.constraint(equalTo: dashboard.topAnchor, constant: 10),
             
             tempLabel.leftAnchor.constraint(equalTo: weatherIcon.rightAnchor, constant: 10),
