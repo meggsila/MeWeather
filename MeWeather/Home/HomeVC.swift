@@ -121,7 +121,7 @@ class HomeVC: UIViewController {
         return label
     }()
     
-    var dailyWeatherLabel: UILabel = {
+    var hourlyWeatherLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
@@ -132,7 +132,7 @@ class HomeVC: UIViewController {
         return label
     }()
     
-    var dailyWeatherStack: UIStackView = {
+    var hourlyWeatherStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.backgroundColor = .clear
@@ -143,15 +143,18 @@ class HomeVC: UIViewController {
         return stack
     }()
     
-    var dailyWeatherViewsArray = [DailyWeatherView]()
+    var hourlyWeatherViewsArray = [HourlyWeatherView]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+        view.addGestureRecognizer(tap)
+        
         setupProfileSection()
         setupSearchController()
         setupDashboard()
-        setupDailyForecastViews()
+        setupHourlyForecastViews()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -248,42 +251,42 @@ class HomeVC: UIViewController {
         ])
     }
     
-    private func setupDailyForecastViews() {
-        view.addSubview(dailyWeatherLabel)
-        view.addSubview(dailyWeatherStack)
+    private func setupHourlyForecastViews() {
+        view.addSubview(hourlyWeatherLabel)
+        view.addSubview(hourlyWeatherStack)
         
         NSLayoutConstraint.activate([
-            dailyWeatherLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
-            dailyWeatherLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
-            dailyWeatherLabel.heightAnchor.constraint(equalToConstant: 17),
-            dailyWeatherLabel.topAnchor.constraint(equalTo: dashboard.bottomAnchor, constant: 20),
+            hourlyWeatherLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
+            hourlyWeatherLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
+            hourlyWeatherLabel.heightAnchor.constraint(equalToConstant: 17),
+            hourlyWeatherLabel.topAnchor.constraint(equalTo: dashboard.bottomAnchor, constant: 20),
             
-            dailyWeatherStack.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
-            dailyWeatherStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
-            dailyWeatherStack.heightAnchor.constraint(equalToConstant: 210),
-            dailyWeatherStack.topAnchor.constraint(equalTo: dailyWeatherLabel.bottomAnchor, constant: 20)
+            hourlyWeatherStack.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
+            hourlyWeatherStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
+            hourlyWeatherStack.heightAnchor.constraint(equalToConstant: 190),
+            hourlyWeatherStack.topAnchor.constraint(equalTo: hourlyWeatherLabel.bottomAnchor, constant: 20)
         ])
         
-        let day1View = DailyWeatherView()
-        let day2View = DailyWeatherView()
-        let day3View = DailyWeatherView()
-        let day4View = DailyWeatherView()
+        let day1View = HourlyWeatherView()
+        let day2View = HourlyWeatherView()
+        let day3View = HourlyWeatherView()
+        let day4View = HourlyWeatherView()
         
-        dailyWeatherViewsArray.append(day1View)
-        dailyWeatherViewsArray.append(day2View)
-        dailyWeatherViewsArray.append(day3View)
-        dailyWeatherViewsArray.append(day4View)
+        hourlyWeatherViewsArray.append(day1View)
+        hourlyWeatherViewsArray.append(day2View)
+        hourlyWeatherViewsArray.append(day3View)
+        hourlyWeatherViewsArray.append(day4View)
 
-        dailyWeatherStack.addArrangedSubview(day1View)
-        dailyWeatherStack.addArrangedSubview(day2View)
-        dailyWeatherStack.addArrangedSubview(day3View)
-        dailyWeatherStack.addArrangedSubview(day4View)
+        hourlyWeatherStack.addArrangedSubview(day1View)
+        hourlyWeatherStack.addArrangedSubview(day2View)
+        hourlyWeatherStack.addArrangedSubview(day3View)
+        hourlyWeatherStack.addArrangedSubview(day4View)
 
         NSLayoutConstraint.activate([
-            day1View.heightAnchor.constraint(equalToConstant: 210),
-            day2View.heightAnchor.constraint(equalToConstant: 210),
-            day3View.heightAnchor.constraint(equalToConstant: 210),
-            day4View.heightAnchor.constraint(equalToConstant: 210)
+            day1View.heightAnchor.constraint(equalToConstant: 190),
+            day2View.heightAnchor.constraint(equalToConstant: 190),
+            day3View.heightAnchor.constraint(equalToConstant: 190),
+            day4View.heightAnchor.constraint(equalToConstant: 190)
         ])
     }
     
@@ -306,5 +309,9 @@ class HomeVC: UIViewController {
         dateFormatter.dateFormat = "EEEE, dd MMMM"
         let yearString = dateFormatter.string(from: date)
         return yearString
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
 }

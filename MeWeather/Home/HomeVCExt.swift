@@ -13,26 +13,29 @@ extension HomeVC: UISearchBarDelegate {
         let apiKey = "a2b0437bab1e6c84f259746c0914bb08"
         let cityName = searchText
         if searchText.count > 2 {
-            AF.request("https://api.openweathermap.org/geo/1.0/direct?q=\(cityName)&limit=1&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
-                switch response.result {
-                case .failure:
-                    let networkErrorAlert = UIAlertController(title: "Network Error", message: "Something wrong happened", preferredStyle: .alert)
-                    let okAction = UIAlertAction(title: "OK", style: .default) { [self] (action) in
-                        self.dismiss(animated: true)
-                    }
-                    networkErrorAlert.addAction(okAction)
-                    self.present(networkErrorAlert, animated: true, completion: nil)
-                case .success(let data):
-                    guard let data = data as? [[String: Any]] else {
-                        return
-                    }
-                    
-                    if data.isEmpty == false {
-                        let weatherItem = data[0]
-                        let lat = weatherItem["lat"] as? Double ?? 0.0
-                        let lon = weatherItem["lon"] as? Double ?? 0.0
-                        self.requestCurrentWeatherData(lat: lat, lon: lon)
-                        self.requestHourlyForecast(lat: lat, lon: lon)
+            DispatchQueue.main.async {
+                AF.request("https://api.openweathermap.org/geo/1.0/direct?q=\(cityName)&limit=1&appid=\(apiKey)", method: .get).responseJSON { (response: DataResponse) in
+                    switch response.result {
+                    case .failure:
+                        let networkErrorAlert = UIAlertController(title: "Network Error", message: "Something wrong happened", preferredStyle: .alert)
+                        let okAction = UIAlertAction(title: "OK", style: .default) { [self] (action) in
+                            self.dismiss(animated: true)
+                        }
+                        networkErrorAlert.addAction(okAction)
+                        self.present(networkErrorAlert, animated: true, completion: nil)
+                        
+                    case .success(let data):
+                        guard let data = data as? [[String: Any]] else {
+                            return
+                        }
+                        
+                        if data.isEmpty == false {
+                            let locationData = data[0]
+                            let lat = locationData["lat"] as? Double ?? 0.0
+                            let lon = locationData["lon"] as? Double ?? 0.0
+                            self.requestCurrentWeatherData(lat: lat, lon: lon)
+                            self.requestHourlyForecast(lat: lat, lon: lon)
+                        }
                     }
                 }
             }
@@ -51,9 +54,8 @@ extension HomeVC: UISearchBarDelegate {
                     }
                     networkErrorAlert.addAction(okAction)
                     self.present(networkErrorAlert, animated: true, completion: nil)
+                
                 case .success(let data):
-                    self.noDataLabel.isHidden = true
-                    
                     guard let data = data as? [String: Any] else {
                         return
                     }
@@ -66,18 +68,18 @@ extension HomeVC: UISearchBarDelegate {
                         return
                     }
                     
-                    guard let weatherData = data["weather"] as? [[String: Any]] else {
+                    guard let weather = data["weather"] as? [[String: Any]] else {
                         return
                     }
                     
                     let cityName = data["name"] as? String ?? "City"
                     let countryName = sys["country"] as? String ?? "Country"
                     let tempKelvin = main["temp"] as? Double ?? 0.0
-                    let tempCelcius = tempKelvin - 273.15
-                    let tempInt = Int(tempCelcius)
+                    let tempInt = Int(tempKelvin - 273.15)
                     
-                    if weatherData.isEmpty == false {
-                        let weatherItem = weatherData[0]
+                    self.noDataLabel.isHidden = true
+                    if weather.isEmpty == false {
+                        let weatherItem = weather[0]
                         let description = weatherItem["description"] as? String ?? "Description"
                         self.descriptionLabel.text = description.capitalizingFirstLetter()
                         self.descriptionToImage(description: description, imagevIew: self.weatherIcon, time: "")
@@ -122,7 +124,7 @@ extension HomeVC: UISearchBarDelegate {
                             guard let weatherData = weatherItem["weather"] as? [[String: Any]] else {
                                 return
                             }
-                            self.dailyWeatherViewsArray[i].noDataLabel.isHidden = true
+                            self.hourlyWeatherViewsArray[i].noDataLabel.isHidden = true
                             
                             let dateText = weatherItem["dt_txt"] as? String ?? ""
                             let start = dateText.index(dateText.startIndex, offsetBy: 11)
@@ -133,7 +135,7 @@ extension HomeVC: UISearchBarDelegate {
                             if weatherData.isEmpty == false {
                                 let item = weatherData[0]
                                 let description = item["description"] as? String ?? "Description"
-                                self.descriptionToImage(description: description, imagevIew: self.dailyWeatherViewsArray[i].weatherIcon, time: String(formattedTime))
+                                self.descriptionToImage(description: description, imagevIew: self.hourlyWeatherViewsArray[i].weatherIcon, time: String(formattedTime))
                             }
                             
                             let tempKelvin = main["temp"] as? Double ?? 0.0
@@ -142,9 +144,9 @@ extension HomeVC: UISearchBarDelegate {
                             let tempFeelsLikeKelvin = main["feels_like"] as? Double ?? 0.0
                             let tempFeelsLikeInt = Int(tempFeelsLikeKelvin - 273.15)
                             
-                            self.dailyWeatherViewsArray[i].timeLabel.text = String(formattedTime)
-                            self.dailyWeatherViewsArray[i].dataLabel.text = "Feels like \(tempFeelsLikeInt)°"
-                            self.dailyWeatherViewsArray[i].tempLabel.text = "\(tempInt)°"
+                            self.hourlyWeatherViewsArray[i].timeLabel.text = String(formattedTime)
+                            self.hourlyWeatherViewsArray[i].dataLabel.text = "Feels like \(tempFeelsLikeInt)°"
+                            self.hourlyWeatherViewsArray[i].tempLabel.text = "\(tempInt)°"
                         }
                     }
                 }
@@ -194,7 +196,7 @@ extension HomeVC: UISearchBarDelegate {
     }
 }
 
-class DailyWeatherView: UIView {
+class HourlyWeatherView: UIView {
     var noDataLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
